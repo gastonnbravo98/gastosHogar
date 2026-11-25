@@ -1,504 +1,149 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gastos del Hogar</title>
-  
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
-  
-  <style>
-    body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .card {
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      backdrop-filter: blur(10px);
-      background: rgba(255,255,255,0.95);
-    }
-    
-    .btn-primary {
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      border: none;
-      border-radius: 25px;
-      padding: 12px 30px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    .form-control {
-      border-radius: 10px;
-      border: 2px solid #e9ecef;
-      padding: 12px 15px;
-      transition: all 0.3s ease;
-    }
-    
-    .form-control:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-    
-    .alert {
-      border-radius: 10px;
-      border: none;
-    }
-    
-    .gasto-item {
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 15px;
-      margin: 10px 0;
-      border-left: 4px solid #667eea;
-    }
-    
-    .chart-container {
-      position: relative;
-      height: 300px;
-      margin: 20px 0;
-    }
-    
-    .stats-card {
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      color: white;
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-    }
-  </style>
+
+  <!-- Bootstrap CSS 5.3.9 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 7.3.1 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css">
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Chart.js 4.6.2 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.2/dist/chart.umd.min.js" defer></script>
+  <!-- jsPDF 4.2.1 & jsPDF-AutoTable 5.0.9 -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@5.0.9/dist/jspdf.plugin.autotable.min.js" defer></script>
+  <!-- Bootstrap JS 5.3.9 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.9/dist/js/bootstrap.bundle.min.js" defer></script>
+  <!-- Lógica de la aplicación -->
+  <script src="js/app.js" defer></script>
 </head>
 <body>
-  <div class="container py-5">
+  <main class="container py-3 py-md-5">
     <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card p-4">
-          <h1 class="text-center mb-4">
-            <i class="fas fa-chart-pie text-primary"></i>
-            Gastos del Hogar
-          </h1>
+      <div class="col-12 col-lg-9 col-xl-8">
+        <div class="card app-card p-3 p-md-4">
+          <!-- Encabezado con botón de modo oscuro -->
+          <header class="app-header mb-4">
+            <h1 class="app-title">
+              <i class="fas fa-chart-pie text-primary me-2"></i>Gastos del Hogar
+            </h1>
+            <button
+              type="button"
+              id="themeToggle"
+              class="theme-toggle"
+              aria-label="Cambiar a modo oscuro"
+              title="Cambiar a modo oscuro"
+            >
+              <i id="themeIcon" class="fas fa-moon"></i>
+            </button>
+          </header>
 
           <!-- Formulario de gastos -->
-          <div class="row">
-            <div class="col-md-4">
-              <label class="form-label">
-                <i class="fas fa-tag"></i> Categoría:
-              </label>
-              <select class="form-select" id="categoria">
-                <option value="">Seleccionar categoría</option>
-                <option value="Luz">⚡ Luz</option>
-                <option value="Agua">💧 Agua</option>
-                <option value="Internet">🌐 Internet</option>
-                <option value="Gas">🔥 Gas</option>
-                <option value="Supermercado">🛒 Supermercado</option>
-                <option value="Transporte">🚌 Transporte</option>
-                <option value="Otros">📦 Otros</option>
-              </select>
-            </div>
-            
-            <div class="col-md-4">
-              <label class="form-label">
-                <i class="fas fa-dollar-sign"></i> Monto ($):
-              </label>
-              <input type="number" class="form-control" id="monto" placeholder="Ej: 5000">
-            </div>
-            
-            <div class="col-md-4">
-              <label class="form-label">
-                <i class="fas fa-calendar"></i> Mes (MM-AAAA):
-              </label>
-              <input type="text" class="form-control" id="fecha" placeholder="Ej: 08-2025" maxlength="7" oninput="formatearFecha(this)">
-            </div>
-          </div>
+          <section aria-label="Registrar gasto">
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <label for="categoria" class="form-label">
+                  <i class="fas fa-tag me-1"></i> Categoría
+                </label>
+                <select class="form-select" id="categoria">
+                  <option value="">Seleccionar categoría</option>
+                  <option value="Luz">⚡ Luz</option>
+                  <option value="Agua">💧 Agua</option>
+                  <option value="Internet">🌐 Internet</option>
+                  <option value="Gas">🔥 Gas</option>
+                  <option value="Supermercado">🛒 Supermercado</option>
+                  <option value="Transporte">🚌 Transporte</option>
+                  <option value="Otros">📦 Otros</option>
+                </select>
+              </div>
 
-          <div class="text-center mt-3">
-            <button class="btn btn-primary btn-lg" onclick="guardarGasto()">
-              <i class="fas fa-save"></i> Guardar Gasto
-            </button>
-          </div>
+              <div class="col-12 col-sm-6 col-md-4">
+                <label for="monto" class="form-label">
+                  <i class="fas fa-dollar-sign me-1"></i> Monto ($)
+                </label>
+                <input type="number" class="form-control" id="monto" placeholder="Ej: 5000" min="1" step="any">
+              </div>
 
-          <div id="mensaje" class="mt-3"></div>
+              <div class="col-12 col-sm-6 col-md-4">
+                <label for="fecha" class="form-label">
+                  <i class="fas fa-calendar me-1"></i> Mes (MM-AAAA)
+                </label>
+                <input type="text" class="form-control" id="fecha" placeholder="Ej: 08-2025" maxlength="7" inputmode="numeric">
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button type="button" id="btnGuardar" class="btn btn-primary-gradient btn-lg">
+                <i class="fas fa-save me-1"></i> Guardar Gasto
+              </button>
+            </div>
+          </section>
+
+          <div id="mensaje" class="mt-3" aria-live="polite"></div>
 
           <!-- Estadísticas -->
-          <div class="row mt-4">
-            <div class="col-md-4">
+          <section aria-label="Resumen de gastos" class="row g-3 mt-2">
+            <div class="col-12 col-sm-4">
               <div class="stats-card">
-                <h4><i class="fas fa-chart-line"></i></h4>
+                <div class="fs-4 mb-1"><i class="fas fa-chart-line"></i></div>
                 <h3 id="totalGastos">$0</h3>
                 <p>Total Gastos</p>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-6 col-sm-4">
               <div class="stats-card">
-                <h4><i class="fas fa-list"></i></h4>
+                <div class="fs-4 mb-1"><i class="fas fa-list"></i></div>
                 <h3 id="cantidadGastos">0</h3>
                 <p>Cantidad</p>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-6 col-sm-4">
               <div class="stats-card">
-                <h4><i class="fas fa-chart-bar"></i></h4>
+                <div class="fs-4 mb-1"><i class="fas fa-chart-bar"></i></div>
                 <h3 id="promedioGastos">$0</h3>
                 <p>Promedio</p>
               </div>
             </div>
-          </div>
+          </section>
 
           <!-- Gráfico -->
-          <div class="chart-container">
+          <section aria-label="Gráfico de gastos" class="chart-container">
             <canvas id="gastosChart"></canvas>
-          </div>
+          </section>
 
-                     <!-- Consulta de gastos -->
-           <div class="row mt-4">
-             <div class="col-md-6">
-               <label class="form-label">
-                 <i class="fas fa-search"></i> Ver gastos de un mes:
-               </label>
-               <input type="text" class="form-control" id="consultaMes" placeholder="Ej: 08-2025" maxlength="7" oninput="formatearFecha(this)">
-             </div>
-             <div class="col-md-3">
-               <button class="btn btn-outline-primary w-100 mt-4" onclick="verGastos()">
-                 <i class="fas fa-search"></i> Ver
-               </button>
-             </div>
-             <div class="col-md-3">
-               <button class="btn btn-outline-success w-100 mt-4" onclick="generarPDF()">
-                 <i class="fas fa-file-pdf"></i> PDF
-               </button>
-             </div>
-           </div>
+          <div class="section-divider"></div>
 
-          <div id="resultadoGastos" class="mt-4"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  
-  <script>
-    let gastosChart;
-
-    function obtenerDatos() {
-      return JSON.parse(localStorage.getItem("gastos")) || {};
-    }
-
-    function guardarDatos(datos) {
-      localStorage.setItem("gastos", JSON.stringify(datos));
-      actualizarEstadisticas();
-      actualizarGrafico();
-    }
-
-    function guardarGasto() {
-      const categoria = document.getElementById("categoria").value;
-      const monto = parseFloat(document.getElementById("monto").value);
-      const fecha = document.getElementById("fecha").value || obtenerMesActual();
-
-      if (!categoria || isNaN(monto) || monto <= 0) {
-        mostrarMensaje("❌ Por favor completa todos los campos correctamente.", "danger");
-        return;
-      }
-
-      if (!validarFecha(fecha)) {
-        mostrarMensaje("❌ Formato de fecha incorrecto. Usa MM-AAAA", "danger");
-        return;
-      }
-
-      let datos = obtenerDatos();
-
-      if (!datos[fecha]) {
-        datos[fecha] = [];
-      }
-
-      datos[fecha].push({ categoria, monto });
-      guardarDatos(datos);
-
-      mostrarMensaje(`✅ Gasto guardado: $${monto.toLocaleString()} en ${categoria} (${fecha})`, "success");
-
-      // Limpiar formulario
-      document.getElementById("categoria").value = "";
-      document.getElementById("monto").value = "";
-      document.getElementById("fecha").value = "";
-    }
-
-    function validarFecha(fecha) {
-      const regex = /^\d{2}-\d{4}$/;
-      return regex.test(fecha);
-    }
-
-    function verGastos() {
-      const fecha = document.getElementById("consultaMes").value;
-      const datos = obtenerDatos();
-
-      let html = "";
-      let total = 0;
-
-      if (!datos[fecha] || datos[fecha].length === 0) {
-        html = '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> No hay gastos registrados para este mes.</div>';
-      } else {
-        html += `<h4><i class="fas fa-calendar-alt"></i> Gastos de ${fecha}</h4>`;
-        datos[fecha].forEach((g, index) => {
-          html += `
-            <div class="gasto-item">
-              <div class="d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-tag"></i> ${g.categoria}</span>
-                <span class="fw-bold">$${g.monto.toLocaleString()}</span>
-                <button class="btn btn-sm btn-outline-danger" onclick="eliminarGasto('${fecha}', ${index})">
-                  <i class="fas fa-trash"></i>
+          <!-- Consulta de gastos -->
+          <section aria-label="Consultar gastos por mes">
+            <div class="row g-2 align-items-end">
+              <div class="col-12 col-md-6">
+                <label for="consultaMes" class="form-label">
+                  <i class="fas fa-search me-1"></i> Ver gastos de un mes
+                </label>
+                <input type="text" class="form-control" id="consultaMes" placeholder="Ej: 08-2025" maxlength="7" inputmode="numeric">
+              </div>
+              <div class="col-6 col-md-3">
+                <button type="button" id="btnVer" class="btn btn-outline-primary w-100 py-2">
+                  <i class="fas fa-search me-1"></i> Ver
+                </button>
+              </div>
+              <div class="col-6 col-md-3">
+                <button type="button" id="btnPdf" class="btn btn-outline-success w-100 py-2">
+                  <i class="fas fa-file-pdf me-1"></i> PDF
                 </button>
               </div>
             </div>
-          `;
-          total += g.monto;
-        });
-        html += `<div class="alert alert-success mt-3"><strong>Total: $${total.toLocaleString()}</strong></div>`;
-      }
 
-      document.getElementById("resultadoGastos").innerHTML = html;
-    }
-
-    function eliminarGasto(fecha, index) {
-      if (confirm('¿Estás seguro de que quieres eliminar este gasto?')) {
-        let datos = obtenerDatos();
-        datos[fecha].splice(index, 1);
-        if (datos[fecha].length === 0) {
-          delete datos[fecha];
-        }
-        guardarDatos(datos);
-        verGastos();
-        mostrarMensaje("✅ Gasto eliminado correctamente", "success");
-      }
-    }
-
-    function mostrarMensaje(texto, tipo = "info") {
-      const mensajeDiv = document.getElementById("mensaje");
-      mensajeDiv.innerHTML = `<div class="alert alert-${tipo} alert-dismissible fade show">
-        ${texto}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>`;
-      
-      setTimeout(() => {
-        mensajeDiv.innerHTML = "";
-      }, 5000);
-    }
-
-    function actualizarEstadisticas() {
-      const datos = obtenerDatos();
-      let total = 0;
-      let cantidad = 0;
-
-      Object.values(datos).forEach(mes => {
-        mes.forEach(gasto => {
-          total += gasto.monto;
-          cantidad++;
-        });
-      });
-
-      const promedio = cantidad > 0 ? total / cantidad : 0;
-
-      document.getElementById("totalGastos").textContent = `$${total.toLocaleString()}`;
-      document.getElementById("cantidadGastos").textContent = cantidad;
-      document.getElementById("promedioGastos").textContent = `$${Math.round(promedio).toLocaleString()}`;
-    }
-
-    function actualizarGrafico() {
-      const datos = obtenerDatos();
-      const categorias = {};
-      
-      Object.values(datos).forEach(mes => {
-        mes.forEach(gasto => {
-          categorias[gasto.categoria] = (categorias[gasto.categoria] || 0) + gasto.monto;
-        });
-      });
-
-      const ctx = document.getElementById('gastosChart').getContext('2d');
-      
-      if (gastosChart) {
-        gastosChart.destroy();
-      }
-
-      gastosChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(categorias),
-          datasets: [{
-            data: Object.values(categorias),
-            backgroundColor: [
-              '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-              '#9966FF', '#FF9F40', '#FF6384'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            },
-            title: {
-              display: true,
-              text: 'Distribución de Gastos por Categoría'
-            }
-          }
-        }
-      });
-    }
-
-    function obtenerMesActual() {
-      const hoy = new Date();
-      let mes = hoy.getMonth() + 1;
-      const anio = hoy.getFullYear();
-      if (mes < 10) mes = "0" + mes;
-      return `${mes}-${anio}`;
-    }
-
-    function formatearFecha(input) {
-      let valor = input.value.replace(/\D/g, ''); // Solo números
-      
-      if (valor.length >= 2) {
-        // Si ya tiene 2 dígitos, agregar el guión
-        if (valor.length === 2 && !input.value.includes('-')) {
-          input.value = valor + '-';
-        } else if (valor.length > 2) {
-          // Si tiene más de 2 dígitos, formatear como MM-AAAA
-          const mes = valor.substring(0, 2);
-          const anio = valor.substring(2, 6);
-          input.value = mes + '-' + anio;
-        }
-      }
-    }
-
-    function generarPDF() {
-      const fecha = document.getElementById("consultaMes").value;
-      const datos = obtenerDatos();
-      
-      if (!fecha) {
-        mostrarMensaje("❌ Por favor ingresa un mes para generar el PDF", "warning");
-        return;
-      }
-
-      if (!datos[fecha] || datos[fecha].length === 0) {
-        mostrarMensaje("❌ No hay gastos registrados para este mes", "warning");
-        return;
-      }
-
-      // Crear el PDF
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      
-      // Configurar el documento
-      const pageWidth = doc.internal.pageSize.width;
-      const pageHeight = doc.internal.pageSize.height;
-      const margin = 20;
-      
-      // Título
-      doc.setFontSize(20);
-      doc.setFont(undefined, 'bold');
-      doc.text('Reporte de Gastos del Hogar', pageWidth / 2, 30, { align: 'center' });
-      
-      // Información del mes
-      doc.setFontSize(14);
-      doc.setFont(undefined, 'normal');
-      doc.text(`Mes: ${fecha}`, margin, 50);
-      doc.text(`Fecha de generación: ${new Date().toLocaleDateString('es-ES')}`, margin, 60);
-      
-      // Calcular total
-      let total = 0;
-      datos[fecha].forEach(gasto => {
-        total += gasto.monto;
-      });
-      
-      doc.text(`Total gastos: $${total.toLocaleString()}`, margin, 70);
-      
-      // Tabla de gastos
-      const tableData = [];
-      datos[fecha].forEach((gasto, index) => {
-        tableData.push([
-          index + 1,
-          gasto.categoria,
-          `$${gasto.monto.toLocaleString()}`
-        ]);
-      });
-      
-      // Agregar fila de total
-      tableData.push(['', 'TOTAL', `$${total.toLocaleString()}`]);
-      
-      doc.autoTable({
-        startY: 90,
-        head: [['#', 'Categoría', 'Monto']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: {
-          fillColor: [102, 126, 234],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        styles: {
-          fontSize: 12,
-          cellPadding: 5
-        },
-        columnStyles: {
-          0: { cellWidth: 20 },
-          1: { cellWidth: 80 },
-          2: { cellWidth: 40, halign: 'right' }
-        }
-      });
-      
-      // Estadísticas adicionales
-      const finalY = doc.lastAutoTable.finalY + 20;
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.text('Estadísticas:', margin, finalY);
-      
-      doc.setFont(undefined, 'normal');
-      doc.text(`• Cantidad de gastos: ${datos[fecha].length}`, margin, finalY + 10);
-      doc.text(`• Promedio por gasto: $${Math.round(total / datos[fecha].length).toLocaleString()}`, margin, finalY + 20);
-      
-      // Categorías más caras
-      const categorias = {};
-      datos[fecha].forEach(gasto => {
-        categorias[gasto.categoria] = (categorias[gasto.categoria] || 0) + gasto.monto;
-      });
-      
-      const categoriaMasCara = Object.entries(categorias).sort((a, b) => b[1] - a[1])[0];
-      doc.text(`• Categoría más cara: ${categoriaMasCara[0]} ($${categoriaMasCara[1].toLocaleString()})`, margin, finalY + 30);
-      
-      // Pie de página
-      doc.setFontSize(10);
-      doc.setTextColor(100);
-      doc.text('Generado por Gastos del Hogar App', pageWidth / 2, pageHeight - 10, { align: 'center' });
-      
-      // Guardar el PDF
-      const nombreArchivo = `gastos_${fecha.replace('-', '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-      doc.save(nombreArchivo);
-      
-      mostrarMensaje("✅ PDF generado correctamente", "success");
-    }
-
-    // Inicializar al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
-      actualizarEstadisticas();
-      actualizarGrafico();
-    });
-  </script>
+            <div id="resultadoGastos" class="mt-4"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
 </body>
 </html>

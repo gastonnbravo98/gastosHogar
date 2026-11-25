@@ -2,6 +2,13 @@
 
 Aplicación web para gestionar los gastos del hogar de manera simple y eficiente.
 
+## 📁 Estructura del Proyecto
+
+- `index.html`: Estructura principal de la aplicación
+- `css/styles.css`: Estilos personalizados, modo claro/oscuro y diseño responsive
+- `js/app.js`: Lógica de gastos, estadísticas, gráficos, tema y exportación a PDF
+- `package.json`: Configuración y dependencias del proyecto
+
 ## 🚀 Instalación
 
 1. **Instalar dependencias:**
@@ -20,12 +27,13 @@ La aplicación se abrirá automáticamente en `http://localhost:3000`
 ## 📦 Paquetes NPM Incluidos
 
 ### Dependencias de Desarrollo:
-- **live-server**: Servidor de desarrollo con recarga automática
+- **live-server** (`^1.2.2`): Servidor de desarrollo con recarga automática
 
 ### Dependencias Principales:
-- **Chart.js**: Para crear gráficos de gastos
-- **Bootstrap**: Framework CSS para mejor diseño
-- **Font Awesome**: Iconos profesionales
+- **Bootstrap** (`^5.3.9`): Framework CSS y modo oscuro (`data-bs-theme`)
+- **Chart.js** (`^4.6.2`): Gráficos interactivos de gastos
+- **Font Awesome Free** (`^7.3.1`): Iconos
+- **jsPDF** (`^4.2.1`) & **jsPDF-AutoTable** (`^5.0.9`): Exportación de reportes en PDF
 
 ## 🛠️ Scripts Disponibles
 
@@ -34,18 +42,10 @@ La aplicación se abrirá automáticamente en `http://localhost:3000`
 - `npm run build`: Compila el proyecto
 - `npm test`: Ejecuta tests (pendiente de configurar)
 
-## 📈 Próximas Mejoras
+## ✨ Características
 
-- [ ] Gráficos interactivos con Chart.js
-- [ ] Diseño responsive con Bootstrap
-- [ ] Exportar datos a Excel/PDF
-- [ ] Sistema de presupuestos
-- [ ] Categorías predefinidas
-- [ ] Filtros avanzados
-
-## 💡 Beneficios de usar NPM
-
-1. **Gestión de dependencias**: Instalar librerías fácilmente
-2. **Scripts automatizados**: Comandos personalizados
-3. **Desarrollo más rápido**: Herramientas modernas
-4. **Escalabilidad**: Fácil agregar nuevas funcionalidades 
+- Registro de gastos por categoría y mes (`MM-AAAA`) con almacenamiento en `localStorage`
+- Estadísticas globales (total, cantidad y promedio) y gráfico de torta por categoría
+- Consulta mensual con eliminación de gastos y exportación a PDF
+- Modo claro / oscuro con persistencia y detección de preferencia del sistema
+- Diseño adaptable a dispositivos móviles

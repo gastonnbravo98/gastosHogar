@@ -1,6 +1,6 @@
 {
   "name": "gastos-hogar",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Aplicación para gestionar gastos del hogar",
   "main": "index.html",
   "scripts": {
@@ -16,10 +16,10 @@
     "live-server": "^1.2.2"
   },
   "dependencies": {
-    "chart.js": "^4.4.0",
-    "bootstrap": "^5.3.2",
-    "font-awesome": "^4.7.0",
-    "jspdf": "^2.5.1",
-    "jspdf-autotable": "^3.8.1"
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "bootstrap": "^5.3.9",
+    "chart.js": "^4.6.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.9"
   }
-} 
+}
